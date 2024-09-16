@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Net.Quic;
 using System.Numerics;
@@ -165,12 +166,11 @@ static string GetQuizDataFilePath()
             return filepath;
         }
     }
-    throw new FileNotFoundException("QuizData.json Was Not Found!");
+    const string fileName = "QuizData.Json";
+    string path = Directory.GetCurrentDirectory()+"\\"+fileName;
+    File.Create(path);
+    return path;
 }
-
-
-
-
 static string FormatQuiz(string quiz)
 {
 

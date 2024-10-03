@@ -10,7 +10,9 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.VisualBasic;
+using System.Text;
 
+Console.InputEncoding = UnicodeEncoding.UTF8;
 string jsonQuizDataString = File.ReadAllText(GetQuizDataFilePath());
 
 Dictionary<string, string> atomDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonQuizDataString);
@@ -24,57 +26,61 @@ foreach (var kvp in atomDictionary)
 Console.Clear();
 
 int score = 0;
+
 void CaseCorrectAnswer()
 {
     score++;
     Console.ForegroundColor = ConsoleColor.Green;
     Console.WriteLine("Correct!");
     Console.ForegroundColor = ConsoleColor.Gray;
-
 }
-static void CaseWrongAnswer(string atomeNameOrSymbol)
+
+void CaseWrongAnswer(string correctAnswer)
 {
     Console.ForegroundColor = ConsoleColor.Red;
     Console.WriteLine("Wrong!");
-
     Console.ForegroundColor = ConsoleColor.DarkYellow;
-    Console.WriteLine("correct Answer is " + atomeNameOrSymbol);
+    Console.WriteLine($"Correct answer is: {correctAnswer}");
     Console.ForegroundColor = ConsoleColor.Gray;
 }
 
-
 Console.CursorVisible = false;
-Console.CursorLeft = 0;
 int currentCursorTop = 4;
+string navigationCharacter = "=>";
+
 while (true)
 {
-
     Console.Clear();
-    System.Console.WriteLine("Welcom to Chemistry Quiz!");
-    System.Console.WriteLine("what are you willing to do?\n\n");
-    System.Console.WriteLine("  1.Start Quiz");
-    System.Console.WriteLine("  2.Create Quiz From Unformatted List");
-    System.Console.WriteLine("  2.Edit/See Quiz Manually");
-    System.Console.WriteLine("  3.Quit");
-    System.Console.WriteLine("\n\n\n");
-    System.Console.WriteLine("Navigate with UP & DOWN Arrows and Enter to Confirm.");
-    string navigationCharacter = "=>";
+    Console.WriteLine("Welcome to Chemistry Quiz!");
+    Console.WriteLine("What would you like to do?\n\n");
+    Console.WriteLine("  1. Start Quiz");
+    Console.WriteLine("  2. Create Quiz From Unformatted List");
+    Console.WriteLine("  3. Edit/See Quiz Manually");
+    Console.WriteLine("  4. Quit");
+    Console.WriteLine("\n\n\n");
+    Console.WriteLine("Navigate with UP & DOWN Arrows and Enter to Confirm.");
+
     Console.CursorTop = currentCursorTop;
     Console.Write(navigationCharacter);
+
     ConsoleKey inputCharacter = Console.ReadKey().Key;
 
-    if (inputCharacter == ConsoleKey.UpArrow && Console.CursorTop != 4)
+    if (inputCharacter == ConsoleKey.UpArrow && currentCursorTop > 4)
     {
-        Console.CursorTop--;
-        currentCursorTop = Console.CursorTop;
-        Console.Write(navigationCharacter);
+        Console.SetCursorPosition(0, currentCursorTop);
+        Console.Write("  ");
+        currentCursorTop--;
     }
-    else if (inputCharacter == ConsoleKey.DownArrow && Console.CursorTop != 7)
+    else if (inputCharacter == ConsoleKey.DownArrow && currentCursorTop < 7)
     {
-        Console.CursorTop++;
-        currentCursorTop = Console.CursorTop;
-        Console.Write(navigationCharacter);
+        Console.SetCursorPosition(0, currentCursorTop);
+        Console.Write("  ");
+        currentCursorTop++;
     }
+
+    Console.SetCursorPosition(0, currentCursorTop);
+    Console.Write(navigationCharacter);
+
     if (inputCharacter == ConsoleKey.Enter)
     {
         Console.Clear();
@@ -84,18 +90,16 @@ while (true)
         }
         else if (currentCursorTop == 5)
         {
-            System.Console.WriteLine("(Warning the content of the File will be overwritten) Paste the Unformatted text here:");
+            Console.WriteLine("(Warning: the content of the file will be overwritten) Paste the unformatted text here:");
             string unformattedQuiz = Console.ReadLine();
 
             string formattedQuiz = FormatQuiz(unformattedQuiz);
-            Console.WriteLine("the quiz will be formatted as following:");
-            System.Console.WriteLine(formattedQuiz);
-            System.Console.WriteLine("Do you want to apply changes? (y)/(n)");
+            Console.WriteLine("The quiz will be formatted as follows:");
+            Console.WriteLine(formattedQuiz);
+            Console.WriteLine("Do you want to apply changes? (y)/(n)");
             string answer = Console.ReadLine();
             if (answer == "y")
                 File.WriteAllText(GetQuizDataFilePath(), formattedQuiz);
-
-
         }
         else if (currentCursorTop == 6)
         {
@@ -107,122 +111,109 @@ while (true)
         }
     }
 }
+
 void EditQuiz()
 {
     Process.Start("Notepad.exe", GetQuizDataFilePath());
-    System.Console.WriteLine("press anything to continue...");
+    Console.WriteLine("Press any key to continue...");
     Console.ReadKey();
 }
 
-void AskQuestions(List<Atom> atomerna, string symbolOrName)
+void AskQuestions(List<Atom> atoms, string type)
 {
-    while (true)
+    Random random = new Random();
+    while (atoms.Count > 0)
     {
-        
-        if (atomerna.Count == 0)
-            break;
-        int randomInt = new Random().Next(0, atomerna.Count);
-        Atom atom = atomerna[randomInt];
+        int randomIndex = random.Next(atoms.Count);
+        Atom atom = atoms[randomIndex];
 
-        Console.WriteLine($"What is the name of the following {symbolOrName}(to quit Type \"Exit\"):\n");
-        if (symbolOrName == "symbol")
+        Console.WriteLine($"What is the {type} (type \"Exit\" to quit):\n");
+
+        if (type == "symbol")
         {
+            // Show the symbol, expect the name as input
             Console.WriteLine(atom.symbol);
-            Console.Write("Your Answer: ");
-            string answer = Console.ReadLine();
-            if (answer == "Exit")
-            {
+            Console.Write("Your answer (name): ");
+            string answer = Console.ReadLine()?.Trim(); // Trim whitespace
+
+            if (answer.Equals("Exit", StringComparison.OrdinalIgnoreCase))
                 return;
-            }
-            else if (answer == atom.name)
-            {
+
+            // Normalize both the input and correct answer to account for encoding issues
+            if (Normalize(answer).Equals(Normalize(atom.name), StringComparison.OrdinalIgnoreCase))
                 CaseCorrectAnswer();
-            }
             else
-            {
-                CaseWrongAnswer(atom.name);
-            }
+                CaseWrongAnswer(atom.name); // Correct answer is the name
         }
-        else if (symbolOrName == "name")
+        else if (type == "name")
         {
+            // Show the name, expect the symbol as input
             Console.WriteLine(atom.name);
-            Console.Write("Your Answer: ");
-            string answer = Console.ReadLine();
-            if (answer == "Exit")
-            {
+            Console.Write("Your answer (symbol): ");
+            string answer = Console.ReadLine()?.Trim(); // Trim whitespace
+
+            if (answer.Equals("Exit", StringComparison.OrdinalIgnoreCase))
                 return;
-            }
-            else if (answer == atom.symbol)
-            {
+
+            // Normalize both the input and correct answer to account for encoding issues
+            if (Normalize(answer).Equals(Normalize(atom.symbol), StringComparison.OrdinalIgnoreCase))
                 CaseCorrectAnswer();
-            }
             else
-            {
-                CaseWrongAnswer(atom.symbol);
-            }
+                CaseWrongAnswer(atom.symbol); // Correct answer is the symbol
         }
-        atomerna.Remove(atom);
+
+        atoms.RemoveAt(randomIndex);
     }
-
-
 }
 
+// Helper function to normalize strings for consistent Unicode handling
+string Normalize(string input)
+{
+    return input.Normalize(NormalizationForm.FormC).Trim(); // Normalize Unicode characters
+}
 
 
 
 void StartQuiz()
 {
-
-List<Atom> atomsCopy = atoms;
-List<Atom> atomsCopy1 = atoms;
+    List<Atom> atomsCopy = new List<Atom>(atoms);
     AskQuestions(atomsCopy, "symbol");
-    Console.ReadKey();
     Console.Clear();
-    AskQuestions(atomsCopy1, "name");
+
+    atomsCopy = new List<Atom>(atoms); // Reset the list for the second round
+    AskQuestions(atomsCopy, "name");
+
+    Console.WriteLine($"Your score is: {score} / {atoms.Count * 2}");
     Console.ReadKey();
-    Console.WriteLine("your score is:" + score + "/" + atoms.Count * 2);
 }
-
-
 
 static string GetQuizDataFilePath()
 {
-    string[] filePaths = Directory.GetFiles(Directory.GetCurrentDirectory());
-    foreach (string filepath in filePaths)
+    string path = Path.Combine(Directory.GetCurrentDirectory(), "QuizData.json");
+
+    if (!File.Exists(path))
     {
-        Console.WriteLine(filepath);
-        if (filepath.Contains("QuizData.json", StringComparison.OrdinalIgnoreCase))
-        {
-            return filepath;
-        }
+        File.Create(path).Close();
     }
-    const string fileName = "QuizData.Json";
-    string path = Directory.GetCurrentDirectory()+"\\"+fileName;
-    File.Create(path);
+
     return path;
 }
+
 static string FormatQuiz(string quiz)
 {
-
-
     quiz = quiz.Trim();
-    foreach (char character in quiz)
-    {
-        quiz = Regex.Replace(quiz, @"^\s+$[\r\n]*", string.Empty, RegexOptions.Multiline);
-        quiz = quiz.ReplaceLineEndings(",");
-        quiz = Regex.Replace(quiz, "\"+", "");
-        quiz = Regex.Replace(quiz, @"\w+", "\"$0\"");
 
+    // Replace newline breaks with commas and ensure proper JSON format
+    quiz = Regex.Replace(quiz, @"\s*=\s*", ":");
+    quiz = Regex.Replace(quiz, @"\s+", ""); // Remove excess whitespace
+    quiz = quiz.ReplaceLineEndings(",");
+    quiz = Regex.Replace(quiz, @"(\w+)", "\"$1\"");
 
-        if (character == '=')
-        {
-            quiz = quiz.Replace(character, ':');
-        }
-    }
     return quiz;
 }
+
 public class Atom
 {
-    public string name;
-    public string symbol;
+    public string name { get; set; }
+    public string symbol { get; set; }
 }

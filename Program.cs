@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Net.Quic;
 using System.Numerics;
 using System.Reflection.Metadata;
@@ -18,6 +19,7 @@ foreach (var kvp in atomDictionary)
 {
     atoms.Add(new Atom { name = kvp.Key, symbol = kvp.Value });
 }
+
 Console.Clear();
 
 int score = 0;
@@ -27,6 +29,7 @@ void CaseCorrectAnswer()
     Console.ForegroundColor = ConsoleColor.Green;
     Console.WriteLine("Correct!");
     Console.ForegroundColor = ConsoleColor.Gray;
+
 }
 static void CaseWrongAnswer(string atomeNameOrSymbol)
 {
@@ -109,46 +112,73 @@ void EditQuiz()
     System.Console.WriteLine("press anything to continue...");
     Console.ReadKey();
 }
+
+void AskQuestions(List<Atom> atomerna, string symbolOrName)
+{
+    while (true)
+    {
+        
+        if (atomerna.Count == 0)
+            break;
+        int randomInt = new Random().Next(0, atomerna.Count);
+        Atom atom = atomerna[randomInt];
+
+        Console.WriteLine($"What is the name of the following {symbolOrName}(to quit Type \"Exit\"):\n");
+        if (symbolOrName == "symbol")
+        {
+            Console.WriteLine(atom.symbol);
+            Console.Write("Your Answer: ");
+            string answer = Console.ReadLine();
+            if (answer == "Exit")
+            {
+                return;
+            }
+            else if (answer == atom.name)
+            {
+                CaseCorrectAnswer();
+            }
+            else
+            {
+                CaseWrongAnswer(atom.name);
+            }
+        }
+        else if (symbolOrName == "name")
+        {
+            Console.WriteLine(atom.name);
+            Console.Write("Your Answer: ");
+            string answer = Console.ReadLine();
+            if (answer == "Exit")
+            {
+                return;
+            }
+            else if (answer == atom.symbol)
+            {
+                CaseCorrectAnswer();
+            }
+            else
+            {
+                CaseWrongAnswer(atom.symbol);
+            }
+        }
+        atomerna.Remove(atom);
+    }
+
+
+}
+
+
+
+
 void StartQuiz()
 {
-    foreach (Atom atom in atoms)
-    {
-        Console.WriteLine("What is the name of the following symbol(to quit Type \"Exit\"):\n");
-        Console.WriteLine(atom.name);
-        Console.Write("Your Answer: ");
-        string answer = Console.ReadLine();
-        if(answer == "Exit")
-        {
-            return;
-        }
-        else if (answer == atom.symbol)
-        {
-            CaseCorrectAnswer();
-        }
-        else
-        {
-            CaseWrongAnswer(atom.symbol);
-        }
-    }
+
+List<Atom> atomsCopy = atoms;
+List<Atom> atomsCopy1 = atoms;
+    AskQuestions(atomsCopy, "symbol");
+    Console.ReadKey();
     Console.Clear();
-
-    foreach (Atom atom in atoms)
-    {
-        Console.WriteLine("Name the following symbol:\n");
-        Console.WriteLine(atom.symbol);
-        Console.Write("Your Answer: ");
-        if (Console.ReadLine() == atom.name)
-        {
-            CaseCorrectAnswer();
-        }
-        else
-        {
-            CaseWrongAnswer(atom.name);
-        }
-
-
-    }
-
+    AskQuestions(atomsCopy1, "name");
+    Console.ReadKey();
     Console.WriteLine("your score is:" + score + "/" + atoms.Count * 2);
 }
 

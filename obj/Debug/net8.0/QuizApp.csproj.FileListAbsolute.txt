@@ -12,3 +12,4 @@ c:\Users\bahaa\Desktop\QuizApp\obj\Debug\net8.0\refint\QuizApp.dll
 c:\Users\bahaa\Desktop\QuizApp\obj\Debug\net8.0\QuizApp.pdb
 C:\Users\bahaa\Desktop\QuizApp\obj\Debug\net8.0\QuizApp.genruntimeconfig.cache
 C:\Users\bahaa\Desktop\QuizApp\obj\Debug\net8.0\ref\QuizApp.dll
+c:\Users\bahaa\Desktop\QuizApp\obj\Debug\net8.0\QuizApp.sourcelink.json

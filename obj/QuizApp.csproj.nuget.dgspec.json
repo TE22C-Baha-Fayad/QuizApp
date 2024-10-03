@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\bahaa\\Desktop\\QuizApp\\QuizApp.csproj": {}
+    "C:\\Users\\baha.fayad\\Desktop\\QuizApp\\QuizApp\\QuizApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\bahaa\\Desktop\\QuizApp\\QuizApp.csproj": {
+    "C:\\Users\\baha.fayad\\Desktop\\QuizApp\\QuizApp\\QuizApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\bahaa\\Desktop\\QuizApp\\QuizApp.csproj",
+        "projectUniqueName": "C:\\Users\\baha.fayad\\Desktop\\QuizApp\\QuizApp\\QuizApp.csproj",
         "projectName": "QuizApp",
-        "projectPath": "C:\\Users\\bahaa\\Desktop\\QuizApp\\QuizApp.csproj",
-        "packagesPath": "C:\\Users\\bahaa\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\bahaa\\Desktop\\QuizApp\\obj\\",
+        "projectPath": "C:\\Users\\baha.fayad\\Desktop\\QuizApp\\QuizApp\\QuizApp.csproj",
+        "packagesPath": "C:\\Users\\baha.fayad\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\baha.fayad\\Desktop\\QuizApp\\QuizApp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\bahaa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\baha.fayad\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -65,7 +65,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
